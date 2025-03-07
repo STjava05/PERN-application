@@ -1,23 +1,27 @@
 
+
 import React, { useState } from 'react';
 
-const InputTodo = () => {
-    const [name, setName] = useState("");  
-    const [email, setEmail] = useState(""); 
+const InputTodo = ({ setTodoList, todoList }) => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
 
     const onSubmitForm = async (e) => {
         e.preventDefault();
-        const body = { name, email };  
+        const newTodo = { name, email };  
+
         try {
             const response = await fetch('http://localhost:3001/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify(newTodo)
             });
-            const data = await response.json();
-            console.log(data);
 
-            // Resetta i campi dopo il submit
+            const data = await response.json(); 
+
+            // Aggiorna subito lo stato per mostrare il nuovo dato
+            setTodoList([...todoList, { id: data.id, ...newTodo }]);
+
             setName("");
             setEmail("");
         } catch (err) {
@@ -50,3 +54,4 @@ const InputTodo = () => {
 };
 
 export default InputTodo;
+

@@ -1,29 +1,31 @@
 
+
 import React, { useState } from "react";
 
-const EditTodo = ({ todo }) => {
+const EditTodo = ({ todo, setTodoList, todoList }) => {
   const [showModal, setShowModal] = useState(false);
-  const [name, setName] = useState(todo.name)
-  const [email, setEmail] = useState(todo.email)
+  const [name, setName] = useState(todo.name);
+  const [email, setEmail] = useState(todo.email);
 
-  //console.log(todo)
-
-  const updateEdit = async (e) => {
-  
+  const updateEdit = async () => {
     try {
-      const body = { name, email }
+      const body = { name, email };
       const response = await fetch(`http://localhost:3001/users/${todo.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
-      })
-      window.location = '/'
+      });
 
+      if (response.ok) {
+        const updatedTodo = { ...todo, name, email };
+        setTodoList(todoList.map(t => (t.id === todo.id ? updatedTodo : t)));
+        setShowModal(false);
+      }
     } catch (err) {
-      console.error(err.message)
-
+      console.error(err.message);
     }
-  }
+  };
+
   return (
     <div>
       <button
@@ -49,19 +51,14 @@ const EditTodo = ({ todo }) => {
                 </button>
               </div>
 
-              <div className="modal-body"><input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} /></div>
-              <div className="modal-body"><input type="text" className="form-control" value={email} onChange={e => setEmail(e.target.value)} /></div>
+              <div className="modal-body">
+                <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} />
+                <input type="text" className="form-control" value={email} onChange={e => setEmail(e.target.value)} />
+              </div>
 
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-warning"
-                  onClick={e => updateEdit()} >Edit </button>
-                  
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => setShowModal(false)}> Close</button>
+                <button type="button" className="btn btn-warning" onClick={updateEdit}>Edit</button>
+                <button type="button" className="btn btn-danger" onClick={() => setShowModal(false)}>Close</button>
               </div>
             </div>
           </div>
@@ -72,3 +69,4 @@ const EditTodo = ({ todo }) => {
 };
 
 export default EditTodo;
+
